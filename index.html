@@ -88,12 +88,64 @@
         const contractAddress = "0x6837dc990E6f43D44B836314E35e450f90fe7d53"
         provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner()
-        
+        /*
         const tx = signer.sendTransaction({
             to: "0x4000245f73De65C0b7f6eae329821283ee39d716",
             value: ethers.utils.parseEther("1.0")
         });
- 
+        */
+        const daiAbi = [
+            "function storeItem(int itemID, int price, address owner) public ",
+            "function getItem(int itemID) external view returns (int price, address owner, int userID, bool paid)",
+            "function pay(int itemID, int userID) public payable",
+            "function getAllItems() external view  returns(int[] memory ids, address[] memory owners, int[] memory buyers, bool[] memory payed)"
+        ];
+
+        const daiContract = new ethers.Contract(contractAddress, daiAbi, provider);
+
+        daiContract.getItem(1).then((data) => {
+            console.log(data)
+        });
+        daiContract.getAllItems().then((data) => {
+            console.log("Data ", data);
+            let items = {};
+            for(let id of data.ids){
+                items[id] = {};
+
+            }
+
+            for(let price_pos in data.prices){
+                items[price_pos].price = data.prices[price_pos];
+            }
+
+            for(let owner_pos in data.owners){
+                items[id].owner = owner;
+            }
+
+            for(let paid in data.payed){
+                items[id].paid = paid;
+            }
+
+            for(let buyer in data.buyers){
+                items[id].buyer = buyer
+            }
+            let cardContainer = document.getElementById("card-container")
+
+            for(item of items){
+               let card = `
+                <div class="card" style="width: 18rem;">
+                    <img src="..." class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">ID: ${item.id}</h5>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+               `; 
+               cardContainer.innerHTML+=card;
+
+            }
+        })
 
     </script>
 </body>
