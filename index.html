@@ -53,7 +53,7 @@
         buy("test")
         
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const contractAddress = "0x7788EEdb24d84B9C53557B5DdC0B92DcD604188f"
+        const contractAddress = "0xd739dAD62654E7D27Ddf33D0CA866463f971E35b"
         provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner()
         /*
@@ -69,7 +69,7 @@
             "function getAllItems() external view  returns(int[] memory ids, address[] memory owners, bool[] memory payed, int[] memory prices, string[] memory buyers, string[] memory titles, string[] memory descriptions)"
         ];
 
-        const daiContract = new ethers.Contract(contractAddress, daiAbi, provider);
+        const daiContract = new ethers.Contract(contractAddress, daiAbi, signer);
 
         daiContract.getItem(1).then((data) => {
             console.log(data)
@@ -109,15 +109,20 @@
             let cardContainer = document.getElementById("card-container")
             console.log(items)
             for(let key in items){
+                let paid = items[key].paid 
+                let disabledText = paid ? "disabled" : ""
+                let buyer = items[key].buyer;
+                let buyerText = paid ? `<p><strong>Solded!</strong><p class="card-text"><strong>Buyer</strong>: ${items[key].buyer}</p>` : ""
                let card = `
                 <div class="card col-lg-4 col-md-4 col-sm-2 m-2" style="width: 18rem;">
                    <!-- <img src="..." class="card-img-top" alt="..."> -->
                     <div class="card-body">
                         <h5 class="card-title">Item ID: ${parseInt(items[key].id._hex)}</h5>
-                        <p class="card-text">Price: ${items[key].price}</p>
-                        <p class="card-text">Title: ${items[key].title}</p>
-                        <p class="card-text">Description: ${items[key].description}</p>
-                        <button class="btn btn-primary buy-button" data-item-id="${parseInt(items[key].id._hex)}">Buy</button>
+                        <p class="card-text"><strong>Price</strong>: ${items[key].price}</p>
+                        <p class="card-text"><strong>Title</strong>: ${items[key].title}</p>
+                        <p class="card-text"><strong>Description</strong>: ${items[key].description}</p>
+                        ${buyerText}
+                        <button class="btn btn-primary buy-button" data-price="${items[key].price}" data-item-id="${parseInt(items[key].id._hex)}" ${disabledText}>Buy</button>
                     </div>
                 </div>
                `; 
@@ -128,8 +133,11 @@
             for(let element of elements){
                 element.addEventListener('click', (e) => {
                     let itemID = e.target.getAttribute("data-item-id")
+                    let price = e.target.getAttribute("data-price")
                     console.log(itemID)
-                    daiContract.pay(itemID, 10)
+                    console.log(String(price))
+                    let buyerEmail = prompt("Buyers email?")
+                    daiContract.pay(itemID, buyerEmail, {value: ethers.utils.parseEther(String(price))})
                 })
             }
         })
