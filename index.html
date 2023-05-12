@@ -43,16 +43,7 @@
         </div>
         <button type="submit" class="btn btn-primary mt-2">Create new item</button>
     </form>
-    <div class="container" id="card-container">
-        <div class="card" style="width: 18rem;">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-
+    <div class="container row" id="card-container">
     </div>
 </div>
     <script type="module" type="application/javascript">
@@ -109,8 +100,9 @@
         daiContract.getAllItems().then((data) => {
             console.log("Data ", data);
             let items = {};
-            for(let id of data.ids){
-                items[id] = {};
+            for(let pos in data.ids){
+                items[pos] = {};
+                items[pos].id = data.ids[pos]
 
             }
 
@@ -118,27 +110,27 @@
                 items[price_pos].price = data.prices[price_pos];
             }
 
-            for(let owner_pos in data.owners){
-                items[id].owner = owner;
+            for(let pos in data.owners){
+                items[pos].owner = data.owners[pos];
             }
 
-            for(let paid in data.payed){
-                items[id].paid = paid;
+            for(let pos in data.payed){
+                items[pos].paid = data.payed[pos];
             }
 
-            for(let buyer in data.buyers){
-                items[id].buyer = buyer
+            for(let pos in data.buyers){
+                items[pos].buyer = data.buyers[pos]
             }
             let cardContainer = document.getElementById("card-container")
-
-            for(item of items){
+            console.log(items)
+            for(let key in items){
                let card = `
-                <div class="card" style="width: 18rem;">
-                    <img src="..." class="card-img-top" alt="...">
+                <div class="card col-lg-4 col-md-4 col-sm-2 m-2" style="width: 18rem;">
+                   <!-- <img src="..." class="card-img-top" alt="..."> -->
                     <div class="card-body">
-                        <h5 class="card-title">ID: ${item.id}</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <h5 class="card-title">Item ID: ${parseInt(items[key].id._hex)}</h5>
+                        <p class="card-text">Price: ${items[key].price}</p>
+                        <button class="btn btn-primary" onclick="">Buy</button>
                     </div>
                 </div>
                `; 

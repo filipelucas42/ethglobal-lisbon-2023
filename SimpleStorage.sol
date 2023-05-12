@@ -25,6 +25,7 @@ contract SimpleStorage {
     }
 
     function pay(uint itemID, int buyer) public payable {
+        uint256 timestamp = block.timestamp;
         
         emit debug(msg.sender);
         if(msg.value >= uint(items[itemID].price)) {
@@ -35,5 +36,17 @@ contract SimpleStorage {
         }
     }
 
-
+    function getAllItems() external view  returns(int[] memory ids, address[] memory owners, int[] memory buyers, bool[] memory payed){
+        uint lenght = itemsArray.length;
+        address[] memory owenrs_ = new address[](lenght);
+        int[] memory buyers_ = new int[](lenght);
+        bool[] memory payed_ = new bool[](lenght);
+        for(uint256 i=0; i < itemsArray.length; i++) {
+            item  memory item_ = items[i];
+            owenrs_[i] = item_.owner;
+            buyers_[i] = item_.buyer;
+            payed_[i] = (item_.paid);
+        }
+        return (itemsArray, owenrs_, buyers_, payed_);
+    }
 }
