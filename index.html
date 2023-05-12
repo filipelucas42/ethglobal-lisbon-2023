@@ -17,7 +17,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Crypto MarkePlace</a>
+    <a class="navbar-brand" href="#">Crypto MarketPlace</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -47,36 +47,13 @@
     </div>
 </div>
     <script type="module" type="application/javascript">
-        /*
-        const getAccount = async function () {
-            let request = await ethereum.request({method: 'eth_requestAccounts'})
-            return request[0];
-        }
-        let metaMask = window.ethereum
-        if(window.ethereum){
-            console.log("ethereum is installed");
-        } else {
-            console.log("ethereum is not installed");
-        }
-        getAccount().then((account) => {
-            console.log(account)
-                metaMask
-            .request({
-            method: 'eth_sendTransaction',
-            params: [
-                {
-                from: account, // The user's active address.
-                to: '0x4000245f73De65C0b7f6eae329821283ee39d716', // Required except during contract publications.
-                value: "DE0B6B3A7640000", // Only required to send ether to the recipient from the initiating external account.
-                gasPrice: '0x09184e72a000', // Customizable by the user during MetaMask confirmation.
-                },
-            ],
-            })
-        });
-        */
+        let buy = (e) => {
+            console.log(e)
+        };
+        buy("test")
         
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const contractAddress = "0x6837dc990E6f43D44B836314E35e450f90fe7d53"
+        const contractAddress = "0x7788EEdb24d84B9C53557B5DdC0B92DcD604188f"
         provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner()
         /*
@@ -86,10 +63,10 @@
         });
         */
         const daiAbi = [
-            "function storeItem(int itemID, int price, address owner) public ",
-            "function getItem(int itemID) external view returns (int price, address owner, int userID, bool paid)",
-            "function pay(int itemID, int userID) public payable",
-            "function getAllItems() external view  returns(int[] memory ids, address[] memory owners, int[] memory buyers, bool[] memory payed)"
+            "function storeItem(int price, address owner, string memory title, string memory description) public",
+            "function getItem(uint itemID) external view returns (int price, address owner, string memory buyer, bool paid, string memory title, string memory description)",
+            "function pay(uint itemID, string memory buyer) public payable",
+            "function getAllItems() external view  returns(int[] memory ids, address[] memory owners, bool[] memory payed, int[] memory prices, string[] memory buyers, string[] memory titles, string[] memory descriptions)"
         ];
 
         const daiContract = new ethers.Contract(contractAddress, daiAbi, provider);
@@ -121,6 +98,14 @@
             for(let pos in data.buyers){
                 items[pos].buyer = data.buyers[pos]
             }
+
+            for(let pos in data.titles){
+                items[pos].title = data.titles[pos]
+            }
+
+            for(let pos in data.descriptions){
+                items[pos].description = data.descriptions[pos]
+            }
             let cardContainer = document.getElementById("card-container")
             console.log(items)
             for(let key in items){
@@ -130,12 +115,22 @@
                     <div class="card-body">
                         <h5 class="card-title">Item ID: ${parseInt(items[key].id._hex)}</h5>
                         <p class="card-text">Price: ${items[key].price}</p>
-                        <button class="btn btn-primary" onclick="">Buy</button>
+                        <p class="card-text">Title: ${items[key].title}</p>
+                        <p class="card-text">Description: ${items[key].description}</p>
+                        <button class="btn btn-primary buy-button" data-item-id="${parseInt(items[key].id._hex)}">Buy</button>
                     </div>
                 </div>
                `; 
                cardContainer.innerHTML+=card;
+            }
 
+            let elements = document.getElementsByClassName("buy-button")
+            for(let element of elements){
+                element.addEventListener('click', (e) => {
+                    let itemID = e.target.getAttribute("data-item-id")
+                    console.log(itemID)
+                    daiContract.pay(itemID, 10)
+                })
             }
         })
 
