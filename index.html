@@ -9,7 +9,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
-    <script type="module" src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+    <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"type="application/javascript"></script><!--     <script src="/dist/ethers.js" type="application/javascript"></script>-->    
 <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
@@ -31,37 +31,72 @@
   </div>
 </nav>
 <div id="container" class="container ">
-    <form class="mb-3">
+    <form class="mb-3" id="create-item-form">
         <h3>Create new item:</h3>
         <div class="form-group">
             <label for="exampleInputEmail1">Title</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="title">
+            <input type="text" class="form-control" id="item-title" aria-describedby="emailHelp" placeholder="title">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Description</label>
+            <input type="text" class="form-control" id="item-description" aria-describedby="emailHelp" placeholder="description">
         </div>
         <div class="form-group">
             <label for="exampleInputPassword1">Price ETH</label>
-            <input type="number" class="form-control" id="exampleInputPassword1" placeholder="price">
+            <input type="number" class="form-control" id="item-price" placeholder="price">
         </div>
         <button type="submit" class="btn btn-primary mt-2">Create new item</button>
     </form>
     <div class="container row" id="card-container">
     </div>
 </div>
+<script>
+  
+</script>
     <script type="module" type="application/javascript">
+
+    const MMSDK = new MetaMaskSDK.default()
+
+    const ethereum = MMSDK.getProvider() 
+    /*
+        const getAccount = async function () {
+            let request = await ethereum.request({method: 'eth_requestAccounts'})
+            return request[0];
+        }
+        let metaMask = window.ethereum
+        if(window.ethereum){
+            console.log("ethereum is installed");
+        } else {
+            console.log("ethereum is not installed");
+        }
+        getAccount().then((account) => {
+            console.log(account)
+                metaMask
+            .request({
+            method: 'eth_sendTransaction',
+            params: [
+                {
+                from: account, // The user's active address.
+                to: '0x4000245f73De65C0b7f6eae329821283ee39d716', // Required except during contract publications.
+                value: "DE0B6B3A7640000", // Only required to send ether to the recipient from the initiating external account.
+                gasPrice: '0x09184e72a000', // Customizable by the user during MetaMask confirmation.
+                },
+            ],
+            })
+        });
         let buy = (e) => {
             console.log(e)
         };
-        buy("test")
-        
+        */
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const contractAddress = "0xd739dAD62654E7D27Ddf33D0CA866463f971E35b"
+        const contractAddress = "0x6E648b6A5F5454Ae3ba27b823DFb06468581854c"
         provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner()
         /*
         const tx = signer.sendTransaction({
             to: "0x4000245f73De65C0b7f6eae329821283ee39d716",
             value: ethers.utils.parseEther("1.0")
-        });
-        */
+        });*/
         const daiAbi = [
             "function storeItem(int price, address owner, string memory title, string memory description) public",
             "function getItem(uint itemID) external view returns (int price, address owner, string memory buyer, bool paid, string memory title, string memory description)",
@@ -140,6 +175,12 @@
                     daiContract.pay(itemID, buyerEmail, {value: ethers.utils.parseEther(String(price))})
                 })
             }
+        })
+
+        document.getElementById("create-item-form").addEventListener("submit", (e)=>{
+            e.preventDefault();
+            let target = e.target
+            console.log(target) 
         })
 
     </script>
