@@ -36,37 +36,52 @@
             </div>
         </div>
     </nav>
+    <div class="container row m-auto mt-4">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <h1 class="mb-3">Your MarketPlace running on Web3</h1>
+            <h2>Buy items with ETH and our smart contract will mark you as the buyer on the blockchain</h2>
+            <p>
+                Forget about traditional payments system, here on Crypto MarketPlace everything is verified on the blockchain.
+                As soon you buy your item we will see it on blockchain and send the product to you.
+            </p>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 m-auto">
+            <img style="max-width: 400px;" class="center-block" src="https://yt3.googleusercontent.com/ytc/AGIKgqMc57ZF1aaJeZbDCeDs4TKEHWgoVqdqkY22Fii2vg=s900-c-k-c0x00ffffff-no-rj">
+        </div>
+        <hr>
+    </div>
     <div id="container" class="container ">
         <form class="mb-3" id="create-item-form">
-            <h3>Create new item:</h3>
-            <div class="form-group mb-2">
-                <label for="exampleInputEmail1">Title</label>
-                <input type="text" class="form-control" id="item-title" placeholder="Title">
+            <h3>Post a new item to sell:</h3>
+            <div class="row">
+                <div class="form-group mb-2 col-lg-6">
+                    <label for="exampleInputEmail1">Title</label>
+                    <input type="text" class="form-control" id="item-title" placeholder="Title">
+                </div>
+                <div class="form-group mb-2">
+                    <label for="exampleInputEmail1">Description</label>
+                    <input type="text" class="form-control" id="item-description" placeholder="Description">
+                </div>
+                <div class="form-group mb-2">
+                    <label for="exampleInputEmail1">Image URL</label>
+                    <input type="text" class="form-control" id="item-image-url" placeholder="Image URL">
+                </div>
+                <div class="form-group mb-2 col-lg-6">
+                    <label for="exampleInputPassword1">Price ETH</label>
+                    <input type="number" class="form-control" id="item-price" step="0.001" placeholder="ETH">
+                </div>
+                <div class="form-group mb-2 col-lg-6">
+                    <label for="exampleInputPassword1">Receiving Address:</label>
+                    <input type="text" class="form-control" id="item-address" placeholder="Address">
+                </div>
             </div>
-            <div class="form-group mb-2">
-                <label for="exampleInputEmail1">Description</label>
-                <input type="text" class="form-control" id="item-description" placeholder="Description">
-            </div>
-            <div class="form-group mb-2">
-                <label for="exampleInputEmail1">Image URL</label>
-                <input type="text" class="form-control" id="item-image-url" placeholder="Image URL">
-            </div>
-            <div class="form-group mb-2">
-                <label for="exampleInputPassword1">Price ETH</label>
-                <input type="number" class="form-control" id="item-price" step="0.01" placeholder="ETH">
-            </div>
-            <div class="form-group mb-2">
-                <label for="exampleInputPassword1">Receiving Address:</label>
-                <input type="text" class="form-control" id="item-address" placeholder="Address">
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">Create new item</button>
+            <button type="submit" class="btn btn-primary mt-2">Sell item</button>
         </form>
-        <div class="container row" id="card-container">
+        <hr class="mb-4">
+        <div class="container row mt-4" id="card-container">
+            <h3 class="text-center">Selling Items:</h3>
         </div>
     </div>
-    <script>
-
-    </script>
     <script type="module" type="application/javascript">
 
         const MMSDK = new MetaMaskSDK.default()
@@ -98,12 +113,28 @@
                 ],
                 })
             });
-            let buy = (e) => {
-                console.log(e)
-            };
+
             */
+           window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [{
+                    chainId: "0xe704",
+                    rpcUrls: ["https://rpc.goerli.linea.build"],
+                    chainName: "Linea",
+                    nativeCurrency: {
+                        name: "LineaETH",
+                        symbol: "LineaETH",
+                        decimals: 18
+                    },
+                    blockExplorerUrls: ["https://polygonscan.com/"]
+                }]
+            })
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const contractAddress = "0x1feE8CB8ddcD4dCfC5c53Cbd0d80db5B2f24F843"
+        let metaMaskProvider =  window.ethereum.provider
+        window.ethereum.on('networkChanged', function (networkId) {
+            window.location.reload()
+        })
+        const contractAddress = "0x42e15c33242Cb18C587166b1BE899bC7c5e59A36"
         provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner()
         /*
@@ -112,10 +143,10 @@
             value: ethers.utils.parseEther("1.0")
         });*/
         const daiAbi = [
-            "function storeItem(int price, address owner, string memory title, string memory description, string memory URLImage) public",
-            "function getItem(uint itemID) external view returns (int price, address owner, string memory buyer, bool paid, string memory title, string memory description, string memory URLImage)",
+            "function storeItem(int price, address seller, string memory title, string memory description, string memory URLImage) public",
+            "function getItem(uint itemID) external view returns (int price, address seller, string memory buyer, bool paid, string memory title, string memory description, string memory URLImage)",
             "function pay(uint itemID, string memory buyer) public payable",
-            "function getAllItems() external view  returns(int[] memory ids, address[] memory owners, bool[] memory payed, int[] memory prices, string[] memory buyers, string[] memory titles, string[] memory descriptions, string[] memory URLImages)"
+            "function getAllItems() external view  returns(int[] memory ids, address[] memory sellers, bool[] memory payed, int[] memory prices, string[] memory buyers, string[] memory titles, string[] memory descriptions, string[] memory URLImages)"
         ];
 
         const daiContract = new ethers.Contract(contractAddress, daiAbi, signer);
@@ -136,8 +167,8 @@
                 items[price_pos].price = data.prices[price_pos];
             }
 
-            for (let pos in data.owners) {
-                items[pos].owner = data.owners[pos];
+            for (let pos in data.seller) {
+                items[pos].seller = data.sellers[pos];
             }
 
             for (let pos in data.payed) {
@@ -170,7 +201,7 @@
                     urlImage = items[key].URLImage
                 }
                 let card = `
-                <div class="card col-lg-4 col-md-4 col-sm-2 p-2" style="width: 18rem;">
+                <div class="card col-lg-4 col-md-4 col-sm-2 p-2 m-auto mb-1" style="width: 18rem;">
                    <img src="${urlImage}" class="card-img-top" alt="no image">
                     <div class="card-body">
                         <h5 class="card-title">Item ID: ${parseInt(items[key].id._hex)}</h5>
