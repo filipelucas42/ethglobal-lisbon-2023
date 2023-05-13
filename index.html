@@ -51,7 +51,7 @@
         <hr>
     </div>
     <div id="container" class="container ">
-        <form class="mb-3" id="create-item-form">
+        <form class="mb-3" id="create-item-form" autocomplete="off">
             <h3>Post a new item to sell:</h3>
             <div class="row">
                 <div class="form-group mb-2 col-lg-6">
@@ -134,7 +134,7 @@
         window.ethereum.on('networkChanged', function (networkId) {
             window.location.reload()
         })
-        const contractAddress = "0x42e15c33242Cb18C587166b1BE899bC7c5e59A36"
+        const contractAddress = "0x697A5Cd6A70730f58C97700B0e5Cf0B9b205465f"
         provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner()
         /*
