@@ -16,7 +16,7 @@ All items info are stored in a smart contract, storing the following information
 * seller address
 * buyer identifier (example: email)
 
-The project is using the Linea Test Network so it uses the MetaMask SDK to propmt the user to change to the correct network.
+The project is using the Linea Test Network so it uses the MetaMask SDK to prompt the user to change to the correct network.
 
 ## TechStack:
 * [MetaMask SDK](https://metamask.io/sdk/)
