@@ -1,5 +1,5 @@
 # Crypto MarketPlace
-
+demo: https://ethglobal.filipelucas.com/
 ![](images/home.png)
 
 This projects aims to create a proof of concept of a MarketPlace that runs on web3.
@@ -16,18 +16,14 @@ All items info are stored in a smart contract, storing the following information
 * seller address
 * buyer identifier (example: email)
 
-In this proof of concept we do not tackle privacy issues, in this version of the
-project we just ask for the buyers email to be stored on the blockchain to be associated 
-with the purchased item. A next iteration would for example encrypt the email with a public
-key before going to the blockchain, then the MarketPlace team would decrypt it with a private key.
+The project is using the Linea Test Network so it uses the MetaMask SDK to propmt the user to change to the correct network.
 
-Crypto TechStakk:
+## TechStack:
 * [MetaMask SDK](https://metamask.io/sdk/)
   * ask user to change to the Linea network
   * if the MetaMask extension is not installed the SDK ask the user to install it
 * [Linea](https://linea.build/)
-  * the smart contract is deployed into the LineaNetwork
-  * all trasactions use this network
+  * the smart contract is deployed in the LineaNetwork
 
 ## Smart Contract
 The smart contract developed for this POC has the following methods:
